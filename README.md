@@ -1,6 +1,6 @@
 # Theobroma cacao genomics
 
-Master genomics projet
+## Master genomics projet
 
 **Aim of the project** : find duplicated sequences across a plant genome. Case study : *Theobroma Cacao*, the cacao tree.
 
