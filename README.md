@@ -6,8 +6,13 @@
 
 ### Isoform selection
 
+Each gene display several transcripts. Because two transcripts of the same gene are really likely to be detected as a gene duplication, some isoform filtering has to be done. 
+Here, we chose to keep the longest isoform, assuming that it countains the most information about the gene
 
-### BLASTp
+### BLASTp run
 
+BLASTp is run in order to align every selected peptide with every other. 
 
 ### Clustering of BLAST results
+
+Then, the FTAG Finder v3 pipeline on the Galaxy platform is used to cluster sequences into families based on the BLAST results
