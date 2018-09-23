@@ -19,5 +19,5 @@ Then, the FTAG Finder v3 pipeline on the Galaxy platform is used to cluster sequ
 
 ### Tools and packages
 
-This project uses Python3, the BioPython and the pandas packages.
-BLAST are run locally with command lines
+This project uses Python3, BioPython and pandas packages.
+BLAST are run locally with command lines.
