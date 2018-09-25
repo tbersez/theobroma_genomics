@@ -13,7 +13,7 @@ This filtering also allow to significatively reduce the size BLASTp instance.
 
 ### BLASTp run
 
-BLASTp is run in order to align every selected peptide with every other. Such alignment can be quite long, even if the use of peptides sequences makes it faster. A tab like file is outputed by the BLASTp. That one is used to cluster protein into duplication families.
+BLASTp is run in order to align every selected peptide with every other. Such alignment can be quite long, even if the use of peptides sequences makes it faster. A tab like file is outputed by BLASTp. That one is used to cluster protein into duplication families.
 
 ### Clustering of BLAST results
 
@@ -22,5 +22,5 @@ The FTAG Finder v3 pipeline on the Galaxy platform is used to cluster sequences 
 
 ### Tools and packages
 
-This project uses Python3, BioPython and pandas packages.
-BLAST are run locally with command lines.
+This project is coded in Python3 using BioPython and pandas packages.
+BLASTp are run locally with command lines.
