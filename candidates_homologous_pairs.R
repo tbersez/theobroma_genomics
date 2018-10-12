@@ -1,8 +1,21 @@
 library(tidyverse)
+library(igraph)
+
+find_id = function(blast_tab,
+                   query,
+                   subject)
+  {
+  res = blast_tab$pc_id[which(blast_tab[,1] == query 
+                         && blast_tab[,2] == subject)]
+  if(length(res) != 0){
+    return(res)
+  }
+  return(0)
+}
 
 #Parameters
 filename_IN = file.choose()
-filter_pcID = 60
+filter_pcID = 90
 filter_alignLength = 100
 
 
@@ -43,7 +56,46 @@ blastp_out$couple_name = apply(blastp_out, 1, function(x){
 
 blastp_out = blastp_out %>% mutate(pc_times_length = pc_id * alignment_length)
 
-blastp_out %>% group_by(couple_name) %>% slice(which.max(pc_times_length)) %>% ungroup()
+blastp_out = blastp_out %>% group_by(couple_name) %>% slice(which.max(pc_times_length)) %>% ungroup()
 
+#hierarchical clustering
+dis = dist(blastp_out$pc_id,
+     method = "euclidian")
+tree = hclust(dis,
+              method = "centroid")
+plot(tree)
 
+#similarity graph construction
+
+vertex = unique(c(blastp_out$query,blastp_out$subject))
+similarity = matrix(data = NA,
+                    nrow = length(vertex),
+                    ncol = length(vertex)
+                    )
+colnames(similarity) = vertex
+rownames(similarity) = vertex
+rm(vertex)#for memory management
+
+#NON COMPUTIONNALY EFFECTIVE !!
+#filling the similarity matrix with percent of identity
+#for(i in 1:length(rownames(similarity))){
+#  for(j in 1:length(colnames(similarity))){
+#    qu = colnames(similarity)[i]
+#    subj = rownames(similarity)[j]
+#    similarity[i,j] = find_id(blastp_out,
+#                              qu,
+#                              subj)
+#  }
+#}
+
+#for test only
+for(i in 1:10){
+  for(j in 1:10){
+    qu = colnames(similarity)[i]
+    subj = rownames(similarity)[j]
+    similarity[i,j] = find_id(blastp_out,
+                              qu,
+                              subj)
+  }
+}
 
