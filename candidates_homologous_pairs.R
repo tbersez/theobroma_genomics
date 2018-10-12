@@ -2,7 +2,7 @@ library(tidyverse)
 
 #Parameters
 filename_IN = file.choose()
-filter_pcID = 40
+filter_pcID = 60
 filter_alignLength = 100
 
 
@@ -41,20 +41,9 @@ blastp_out$couple_name = apply(blastp_out, 1, function(x){
                             paste(ids, collapse = "-")
                         })
 
-blastp_out %>% group_by(couple_name) %>% slice(which.max(pc_id)) %>% ungroup()
+blastp_out = blastp_out %>% mutate(pc_times_length = pc_id * alignment_length)
+
+blastp_out %>% group_by(couple_name) %>% slice(which.max(pc_times_length)) %>% ungroup()
 
 
 
-#SORTING
-blastp_out = blastp_out[order(blastp_out$bit_score, 
-                      decreasing = TRUE),
-                ]
-#FILTERING
-    blastp_out = subset(x = blastp_out, query != subject)
-    blastp_out = subset(x = blastp_out, alignment_length >= 100)
-    blastp_out = subset(x = blastp_out, `%id` >= 75)
-    summary(blastp_out)
-#EXPORTING
-    write.table(blastp_out,
-                file = "blastp_filtered",
-                sep = '\t')
