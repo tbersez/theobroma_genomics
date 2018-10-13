@@ -1,12 +1,23 @@
+#Libraries
+if (!require(tidyverse)) install.packages('tidyverse')
+if (!require(igraph)) install.packages('igraph')
+library(tidyverse)
+library(igraph)
+
+#Parameters
+filename_IN = file.choose()
+filter_pcID = 70
+filter_alignLength = 100
+
 #IMPORTING DATA
-setwd("m2_saclay/comparative_genomics/theobroma_genomics/")
-  blastp_out = read.table(
-    file = "./results_BLASTp.tsv",
-    header = F)
-  colnames(blastp_out) = c(
+blastp_out = read.table(
+    file = filename_IN,
+    header = F, stringsAsFactors = F, 
+    comment.char = "#")
+colnames(blastp_out) = c(
     "query",
     "subject",
-    "%id",
+    "pc_id",
     "alignment_length",
     "mistmatches",
     "gap_openings",
@@ -17,12 +28,40 @@ setwd("m2_saclay/comparative_genomics/theobroma_genomics/")
     "e-value",
     "bit_score"
   )
-#FILTERING
-    blastp_out = subset(x = blastp_out, query != subject)
-    blastp_out = subset(x = blastp_out, alignment_length >= 100)
-    blastp_out = subset(x = blastp_out, `%id` >= 75)
-#EXPORTING
-    write.table(blastp_out,
-                file = "blastp_filtered",
-                sep = '\t')
-    
+
+blastp_out = as.tbl(blastp_out)
+
+# First filtering based on length and id % and get rid of autoblast
+blastp_out = blastp_out %>% filter(query != subject)
+
+blastp_out = blastp_out %>% filter(pc_id >= filter_pcID,
+                                   alignment_length >= filter_alignLength )
+
+
+# Second filtering based on couples of query - subject
+
+blastp_out$couple_name = apply(blastp_out, 1, function(x){
+                            ids = sort(c(x[1], x[2]))
+                            paste(ids, collapse = "-")
+                        })
+
+blastp_out = blastp_out %>% mutate(pc_times_length = pc_id * alignment_length)
+
+blastp_out = blastp_out %>% group_by(couple_name) %>% slice(which.max(pc_times_length)) %>% ungroup()
+
+# similarity graph construction
+
+sim_graph = graph.data.frame(blastp_out[,1:3], 
+                             directed = F)
+
+# family contructions by edge betweeness clutering
+
+families = cluster_edge_betweenness(sim_graph,
+                         weights = E(sim_graph)$pc_id,
+                         directed = F,
+                         edge.betweenness = F,
+                         merges = TRUE,
+                         bridges = TRUE,
+                         modularity = TRUE,
+                         membership = TRUE)
+
