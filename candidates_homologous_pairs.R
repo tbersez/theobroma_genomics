@@ -6,12 +6,6 @@ library(tidyverse)
 library(igraph)
 library(SDMTools)
 
-#Libraries
-if (!require(tidyverse)) install.packages('tidyverse')
-if (!require(igraph)) install.packages('igraph')
-library(tidyverse)
-library(igraph)
-
 #Parameters
 filename_IN = file.choose()
 filter_pcID = 70
