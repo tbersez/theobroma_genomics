@@ -6,6 +6,13 @@ library(tidyverse)
 library(igraph)
 library(SDMTools)
 
+if(!require(IRanges)){
+    source("https://bioconductor.org/biocLite.R")
+    biocLite("IRanges")
+}
+library(IRanges)
+
+
 #Parameters
 filename_IN = file.choose()
 filter_pcID = 70
@@ -32,6 +39,19 @@ colnames(blastp_out) = c(
   )
 
 blastp_out = as.tbl(blastp_out)
+
+# tests for erge and coverage....
+tmp = blastp_out[1:5000, ]
+
+couples_names = tmp %>% select(query, subject) %>% 
+    as.matrix(.) %>% 
+    apply(X = .,MARGIN = 1, FUN = function(x){
+        paste(sort(x), collapse = "_")  
+    })
+
+tmp = tmp %>% mutate(couple = couples_names)
+
+# ======================================
 
 # First filtering based on length and id % and get rid of autoblast
 blastp_out = blastp_out %>% filter(query != subject)
